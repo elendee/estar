@@ -1,3 +1,3 @@
 const private_obj = {}
 
-module.exports = private_obj
+export default  private_obj

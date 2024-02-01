@@ -1,16 +1,13 @@
-const env = require('./.env.js')
-const log = require('./log.js')
-
-const validator = require('email-validator')
-const p_validator = require('password-validator')
-
-const PRIVATE = require('./data/PRIVATE.js')
-
-const { 
+import env from './.env.js'
+import log from './log.js'
+import validator from 'email-validator'
+import p_validator from 'password-validator'
+import PRIVATE from './data/PRIVATE.js'
+import { 
 	Object3D, 
 	Vector3,
 	Quaternion,
-} = require('three')
+} from 'three'
 
 
 
@@ -305,7 +302,7 @@ const make_debounce = ( fn, time, immediate ) => {// , ...args
 
 
 
-module.exports = {
+export default  {
 	static_chars,
 	// parse_reputations,
 	random_hex,

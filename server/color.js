@@ -1,5 +1,5 @@
 
-module.exports = function( fore, data, back ){
+export default  function( fore, data, back ){
 
 	let response = ''
 	let fg = ''

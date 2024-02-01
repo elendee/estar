@@ -1,10 +1,10 @@
-const env = require('./.env.js')
-const auth = require('./auth.js')
-const User = require('./models/User.js')
-const log = require('./log.js')
-const lib = require('./lib.js')
-const render = require('../client/e_html.js')
-const color = require('./color.js')
+import env from './.env.js'
+import auth from './auth.js'
+import User from './models/User.js'
+import log from './log.js'
+import lib from './lib.js'
+import render from '../client/e_html.js'
+import color from './color.js'
 
 
 
@@ -24,7 +24,7 @@ const routes = {
 
 let bare_path, ip
 
-module.exports = function(req, res, next) {
+export default  function(req, res, next) {
 
 	if( req.path.match(/\/resource/) || req.path.match(/\/client/) ){
 

@@ -1,3 +1,3 @@
 const public_obj = {}
 
-module.exports = public_obj
+export default  public_obj

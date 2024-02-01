@@ -1,4 +1,4 @@
-const log = require('./log.js')
+import log from './log.js'
 
 
 
@@ -119,7 +119,7 @@ const ISO_is_full = iso => {
 
 }
 
-module.exports = {
+export default  {
 	add,
 	ISO_is_full,
 	to_raw_ISO,

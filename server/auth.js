@@ -1,11 +1,11 @@
-const env = require('./.env.js')
-const bcrypt = require('bcryptjs')
-const date = require('./date.js')
-const log = require('./log.js')
-const lib = require('./lib.js')
-const mail = require('./mail.js')
-const DB = require('./db.js')
-const User = require('./models/User.js')
+import env from './.env.js'
+import bcrypt from 'bcryptjs'
+import date from './date.js'
+import log from './log.js'
+import lib from './lib.js'
+import mail from './mail.js'
+import DB from './db.js'
+import User from './models/User.js'
 
 
 const SALT_ROUNDS = 10
@@ -295,7 +295,7 @@ const get_account = async( request ) => {
 }
 
 
-module.exports = {
+export default  {
 	register_user,
 	// select_user,
 	login_user,

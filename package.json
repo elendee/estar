@@ -1,5 +1,6 @@
 {
   "name": "estar",
+  "type": "module",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -18,15 +19,15 @@
   "homepage": "https://github.com/elendee/estar#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "connect-redis": "^7.1.1",
     "email-validator": "^2.0.4",
     "express": "^4.18.2",
+    "express-mysql-session": "^3.0.0",
     "express-session": "^1.18.0",
     "form-data": "^4.0.0",
+    "ioredis": "^5.3.2",
     "mailgun.js": "^10.1.0",
     "mysql2": "^3.9.1",
     "password-validator": "^5.3.0",
-    "redis": "^4.6.12",
     "three": "^0.161.0",
     "ws": "^8.16.0"
   }

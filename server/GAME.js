@@ -1,8 +1,8 @@
-const env = require('./.env.js')
-const log = require('./log.js')
-const lib = require('./lib.js')
-// const DB = require('./db.js')
-// const User = require('./models/User.js')
+import env from './.env.js'
+import log from './log.js'
+import lib from './lib.js'
+// import DB from './db.js'
+// import User from './models/User.js'
 
 
 
@@ -26,4 +26,4 @@ const game = new Game()
 
 
 
-module.exports = game
+export default  game

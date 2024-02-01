@@ -1,5 +1,4 @@
-
-const env = require('./.env.js')
+import env from './.env.js'
 
 const active = env.ACTIVE
 
@@ -33,7 +32,7 @@ const log = function( type, msg, ...data ){
 	if( active[ type ] ){
 		let color = ''
 		let pre = ''
-		for( t in active ) {
+		for( const t in active ) {
 			c++
 			if( t == type ){
 				color = colors_fg[ c % colors_fg.length ]
@@ -50,7 +49,7 @@ log.flag = ( msg, data )=> {
 }
 
 
-module.exports = log
+export default  log
 
 
 

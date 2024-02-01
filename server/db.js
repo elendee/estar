@@ -1,11 +1,9 @@
 
-const log = require('./log.js')
-
-const date = require('./date.js')
-
-const env = require('./.env.js')
-const mysql = require('mysql2')
-const assert = require('assert')
+import log from './log.js'
+import date from './date.js'
+import env from './.env.js'
+import mysql from 'mysql2'
+import assert from 'assert'
 
 let _pool
 
@@ -305,7 +303,7 @@ const backup = async( request ) => {
 
 
 
-module.exports = {
+export default  {
 	backup,
 	getPool,
 	initPool,

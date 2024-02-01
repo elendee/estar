@@ -1,11 +1,7 @@
-const log = require('./log.js')
-const env = require('./.env.js')
-const formData = require('form-data');
-
-
-// const nodemailer = require('nodemailer')
-// const mailgun = require("mailgun-js")
-const mailgun = require('mailgun.js')
+import log from './log.js'
+import env from './.env.js'
+import formData from 'form-data'
+import mailgun from 'mailgun.js'
 
 
 
@@ -164,7 +160,7 @@ if( !env.PRODUCTION ){
 
 	// }
 
-	// module.exports = {
+	// export default  {
 	// 	transporter,
 	// 	send,
 	// }
@@ -184,7 +180,7 @@ const catch_send = async( data ) => {
 
 
 
-module.exports = {
+export default  {
 	client: mg,
 	sendmail: catch_send,
 }

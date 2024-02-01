@@ -1,4 +1,4 @@
-const env = require('../server/.env.js')
+import env from '../server/.env.js'
 
 
 const style = type => {
@@ -89,4 +89,4 @@ const render = ( type, request, data ) => {
 }
 
 
-module.exports = render
+export default render

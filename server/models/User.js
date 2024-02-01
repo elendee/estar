@@ -1,4 +1,4 @@
-const Model = require('./Model.js')
+import Model from './Model.js'
 
 
 class User extends Model {
@@ -7,4 +7,4 @@ class User extends Model {
 	}
 }
 
-module.exports = User
+export default  User

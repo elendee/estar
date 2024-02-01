@@ -1,7 +1,5 @@
-
-const WebSocket = require('ws')
-// const env = require('./.env.js')
-// const log = require('./log.js')
+import WebSocket, { WebSocketServer } from 'ws';
+// import WebSocket from 'ws'
 
 
 let wss = false
@@ -10,7 +8,7 @@ function getInstance(){
 
 	if( wss ) return wss
 
-	wss = new WebSocket.Server({
+	wss = new WebSocketServer({
 		// port: env.PORT,// + 1,
 		noServer: true, // ^^ mutex
 		clientTracking: true,
@@ -24,5 +22,5 @@ function getInstance(){
 
 }
 
-module.exports = getInstance
+export default  getInstance
 

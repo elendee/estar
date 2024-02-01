@@ -1,6 +1,6 @@
-const log = require('../log.js');
-const lib = require('../lib.js');
-const DB = require('../db.js');
+import log from '../log.js'
+import lib from '../lib.js'
+import DB from '../db.js'
 
 
 class Model {
@@ -68,4 +68,4 @@ class Model {
 
 
 
-module.exports = Model
+export default  Model
