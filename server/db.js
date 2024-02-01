@@ -1,4 +1,3 @@
-
 import log from './log.js'
 import date from './date.js'
 import env from './.env.js'
@@ -72,6 +71,71 @@ function getPool() {
 	return _pool
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+let _session_pool
+
+function initSessionPool( callback ) {
+    
+	if ( _session_pool ) {
+		console.log('trying to init pool redundantly')
+		return callback(null, _session_pool)
+	}
+
+	_session_pool = mysql.createPool({
+		connectionLimit: 10,
+		host: env.SESSION_DB.HOST,
+		user: env.SESSION_DB.USER,
+		password: env.SESSION_DB.PW,
+		database: env.SESSION_DB.NAME,
+		charset: env.SESSION_DB.CHARSET,
+		timezone: '+00:00', // should be unecessary if all are TIMESTAMP ?
+		// multipleStatements: true,
+	})
+
+	if( _session_pool ) log('db', 'session pool init')
+
+	return callback( null, _session_pool )
+
+}
+
+
+
+function getSessionPool() {
+
+	assert.ok( _pool, 'Pool has not been initialized, call init first' )
+	return _pool
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 async function update( doc, field_array, value_array ){
@@ -296,7 +360,6 @@ const backup = async( request ) => {
 		msg: `backup complete - <a href="../${ backup_link + '/' + stamp }.sql">click here to download</a><br>Backup made to:<br><pre>${ backup_link }</pre>`
 	}
 
-
 }
 
 
@@ -307,5 +370,7 @@ export default  {
 	backup,
 	getPool,
 	initPool,
+	getSessionPool,
+	initSessionPool,
 	update
 }

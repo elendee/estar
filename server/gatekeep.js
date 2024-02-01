@@ -12,6 +12,7 @@ const routes = {
 	GET: {
 		logged: [
 			'account', 
+			'admin',
 		],
 	}, 	
 	POST: {
@@ -56,7 +57,10 @@ export default  function(req, res, next) {
 				if( !lib.is_logged( req ) ){ 
 
 					if( req.method === 'GET' ){
-						return res.send( render('redirect', req, '' ))
+						return res.send( render('redirect', req, {
+							redirect: '/',
+							name: 'home'
+						}))
 					}else{
 						return res.json({
 							success: false,
@@ -70,7 +74,10 @@ export default  function(req, res, next) {
 					log('flag', 'need to handle confirmed state here....')
 
 					if( !req.session.USER._confirmed ){
-						return res.send( render('redirect', req, 'await_confirm' ) )
+						return res.send( render('redirect', req, {
+							redirect: '/await_confirm',
+							name: 'await confirm',
+						}))
 					}
 					next()
 				}
@@ -78,7 +85,10 @@ export default  function(req, res, next) {
 			// -- requires admin routes
 			}else if( env.PRODUCTION && req.path.match(/admin/i) && !lib.is_admin( req ) ){ // admin block ...
 
-				return res.send( render('redirect', req, '' ) )
+				return res.send( render('redirect', req, {
+					redirect: '/',
+					name: 'home',
+				}))
 
 			// -- normal routes
 			}else {  

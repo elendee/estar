@@ -1,7 +1,7 @@
 // native
 import os from 'os'
-import express from 'express'
-import http from 'http'
+import express, { response } from 'express'
+import http, { request } from 'http'
 import fs from 'fs'
 
 // env
@@ -12,9 +12,6 @@ import DB from './server/db.js'
 // NPM
 import session from 'express-session'
 import mysql_session from 'express-mysql-session'
-
-// import redis from 'redis'
-// import ConnectRedisStore from 'connect-redis'
 
 // app layer
 import lib from './server/lib.js'
@@ -54,44 +51,45 @@ function heartbeat(){
 ;( async() => {
 
 
-	await new Promise( resolve => {
-
+	// db init
+	const pool = await new Promise( resolve => {
 		DB.initPool(( err, pool ) => {
-
 			if( err ) return console.error( 'no db: ', err )
-
 			resolve( pool )
-
 		})
-
 	})
 
+	// log('flag', 'valid?', Object.keys( pool ))
 
+	// session inits
+	// initialize store class
+	const MySQLStore = mysql_session( session )
+	// connect to the session db
+	const session_pool = await new Promise( resolve => {
+		DB.initSessionPool(( err, sess_pool ) => {
+			if( err ) return console.error( err )
+			resolve( sess_pool )
+		})
+	})
+	// combine the store class with the connection (pool)
+	const sessionStore = new MySQLStore({ 
+		// options
+	}, session_pool )
+
+	// express init
 	const exp = new express()
-
 	const server = http.createServer( exp )
 
-
-	const MySQLStore = mysql_session( session )
-
-	// const options = {
-	// 	host: 'localhost',
-	// 	port: 3306,
-	// 	user: 'session_test',
-	// 	password: 'password',
-	// 	database: 'session_test'
-	// };
-	const sessionConnect = pool.createConnection( env.SESSION_DB )
-
-	const sessionStore = new MySQLStore({ /* options */}, sessionConnect );
-
+	// express + session, using our new Store
 	exp.use(session({
 		key: env.MYSQL_SESSION.KEY,
 		secret: env.MYSQL_SESSION.SECRET,
 		store: sessionStore,
 		resave: false,
 		saveUninitialized: false,
-	}));
+	}))
+
+
 
 	// 	secret: env.REDIS.SECRET,
 	// 	name: env.REDIS.NAME,
@@ -289,8 +287,13 @@ function heartbeat(){
 	})
 
 	exp.get('/robots.txt', (request, response) => {
-		response.sendFile('/resource/robots.txt', { root: './' } )
-		log('routing', 'bot')
+		response.sendFile( 'robots.txt', { root: './' } )
+	})
+
+	exp.get('*', (request, response) => {
+		const bare_path = request.path.replace(/\//g, '')
+		// log('flag',' sending to..', bare_path )
+		response.send( render( bare_path, request, {} ))
 	})
 
 	// ^^ GET
