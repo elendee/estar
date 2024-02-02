@@ -276,11 +276,6 @@ function heartbeat(){
 		log('flag', 'sent response /')
 	})
 
-	exp.get('/abc', (request, response) => {
-		log('flag', '<<<<')
-		response.send( render( 'abc', request ) )
-	})
-
 	exp.get('/logout', ( request, response ) => {
 		request.session.destroy()
 		response.send( render('redirect', request, '' ))
