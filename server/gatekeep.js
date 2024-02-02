@@ -14,18 +14,13 @@ const routes = {
 			'account', 
 			'admin',
 		],
-	}, 	
-	POST: {
-		logged: [
-			'get_account',
-		],
-	}
+	},
 }
 
 
 let bare_path, ip
 
-export default  function(req, res, next) {
+const gatekeep = (req, res, next) => {
 
 	if( req.path.match(/\/resource/) || req.path.match(/\/client/) ){
 
@@ -48,62 +43,55 @@ export default  function(req, res, next) {
 
 			next()
 
-		}else{
+		}else if( routes[ req.method ].logged.includes( bare_path ) ){ 
 
-			// -- required logged in routes:
-			if( routes[ req.method ].logged.includes( bare_path ) ){ 
+			// - not logged
+			if( !lib.is_logged( req ) ){ 
 
-				// - not logged
-				if( !lib.is_logged( req ) ){ 
-
-					if( req.method === 'GET' ){
-						return res.send( render('redirect', req, {
-							redirect: '/',
-							name: 'home'
-						}))
-					}else{
-						return res.json({
-							success: false,
-							msg: 'must be logged in',
-						})
-					}
-
-				// - logged in 
-				}else{ 
-
-					log('flag', 'need to handle confirmed state here....')
-
-					if( !req.session.USER._confirmed ){
-						return res.send( render('redirect', req, {
-							redirect: '/await_confirm',
-							name: 'await confirm',
-						}))
-					}
-					next()
+				if( req.method.match(/get$/i) ){
+					return res.send( render('redirect', req, {
+						redirect: '/',
+						name: 'home'
+					}))
+				}else{
+					return lib.res_fail( res, 'blocked unlogged', 'must be logged in')
 				}
 
-			// -- requires admin routes
-			}else if( env.PRODUCTION && req.path.match(/admin/i) && !lib.is_admin( req ) ){ // admin block ...
+			// - logged in 
+			}else{ 
 
-				return res.send( render('redirect', req, {
-					redirect: '/',
-					name: 'home',
-				}))
+				log('flag', 'need to handle confirmed state here....')
 
-			// -- normal routes
-			}else {  
-
-				// log('flag', 'mysterious but fine route: ', req.path )
+				if( !req.session.USER._confirmed ){
+					return res.send( render('redirect', req, {
+						redirect: '/await_confirm',
+						name: 'await confirm',
+					}))
+				}
 				next()
-
 			}
+
+		// -- requires admin routes
+		}else if( env.PRODUCTION && req.path.match(/admin/i) && !lib.is_admin( req ) ){ // admin block ...
+
+			return res.send( render('redirect', req, {
+				redirect: '/',
+				name: 'home',
+			}))
+
+		// -- normal routes
+		}else {  
+
+			// log('flag', 'mysterious but fine route: ', req.path )
+			next()
 
 		}
 
 	}
 
-
 }
+
+
 
 
 function format( data ){
@@ -116,3 +104,5 @@ function color_method( method, data ){
 	return color( ( method === 'POST' ? 'lblue' : 'blue' ), data )
 }
 
+
+export default gatekeep

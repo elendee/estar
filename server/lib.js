@@ -299,6 +299,13 @@ const make_debounce = ( fn, time, immediate ) => {// , ...args
     }
 }
 
+const res_fail = ( response, private_err, public_err ) => {
+    log('flag', 'return_res fail: ', private_err )
+    return response.json({
+        success: false,
+        msg: public_err,
+    })
+}
 
 
 
@@ -334,4 +341,5 @@ export default  {
 
 	make_debounce,
 
+	res_fail,
 }
