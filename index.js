@@ -124,7 +124,10 @@ function heartbeat(){
 
 	server.on('upgrade', function( request, socket, head ){
 
-		redis_session( request, {}, () => {
+		log('flag', 'upgrade')
+
+		// redis_session
+		mysql_session( request, {}, () => {
 		// lru_session( request, {}, () => {
 
 			log('wss', 'session parsed')

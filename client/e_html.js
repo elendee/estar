@@ -54,11 +54,16 @@ const build_header = ( type, request, title ) => {
 	return `
 	<header id='header'>
 		<div id='toggle'>
+			menu
 		</div>
 		<nav id='menu'>
 			${ header_string }
 		</nav>
 	</header>`
+}
+
+const css = type => {
+	return `<link rel='stylesheet' href='/css/${ type }.css'>`
 }
 
 const build_footer = ( request ) => {
@@ -74,7 +79,7 @@ const render = ( type, request, data ) => {
 
 	// log('flag', 'RENDERINGLLLLLL')
 
-	let css_includes = ``
+	let css_includes = css('base')
 	let script_includes = ``
 
 	switch( type ){
@@ -144,7 +149,7 @@ const render = ( type, request, data ) => {
 		}
 
 		script_includes += `<script src='/js/auth/init_${ type }.js' type='module' defer></script>`
-		css_includes += `<link rel='stylesheet' href='/css/${ type }.css'>`
+		css_includes += css( type )
 
 		return `
 		<html>

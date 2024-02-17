@@ -1,0 +1,101 @@
+body{
+    background: rgb(40, 40, 40);
+}
+
+#header{
+
+}
+
+#header.toggled #menu{
+	display: none;
+}
+
+#menu{
+    position: fixed;
+    top: 40;
+    left: 0;
+}
+#toggle{
+    color: red;
+    cursor: pointer;
+    user-select: none;
+}
+
+.menu-item a{
+    color: white;
+}
+
+
+
+
+
+
+#alert-contain{
+	position:fixed;
+	z-index: 999999;
+	bottom: 100px;
+	right: 30px;
+	text-align: right;
+	width: 70%;
+	pointer-events: none;
+	padding-top: 10px;
+}
+.alert-wrap{
+	transition: .5s;
+}
+.alert-msg{
+	position: relative;
+	background: rgba(0, 0, 0, .9);
+	color: lightgrey;
+	display: inline-block;
+	margin: 1px 0;
+	padding: 3px 50px 3px 20px;
+    pointer-events: initial;
+    text-align: left;
+    border: 1px solid #353535;
+}
+.alert-msg pre{
+	max-height: 80vh;
+    overflow-y: auto;
+}
+.alert-msg span{
+	color: orange
+}
+.alert-icon, 
+.alert-close{
+	height: 100%;
+	width: 30px;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.alert-icon{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 12px;
+	background: lightgrey;
+}
+
+.alert-close{
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	pointer-events: initial;
+	cursor: pointer;
+	border-left: 1px solid grey;
+	padding: 2px 5px 0px 5px;
+	font-size: 1.5rem;
+}
+.alert-close:hover{
+	background: rgba(250, 50, 55, .4);
+}
+.type-success .alert-icon{
+	background: rgba(100, 245, 100, .7);
+}
+.type-error .alert-icon,
+.type-warning .alert-icon{
+	background: red;
+}
