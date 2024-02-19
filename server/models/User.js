@@ -5,11 +5,12 @@ import Model from './Model.js'
 class User extends Model {
 	constructor( init ){
 		super( init )
+		init = init || {}
 		this._email = lib.validate_string( init.email, init._email , undefined )
-		this.slug = lib.validate_string( init.slug , undefined )
-		this.handle = lib.validate_string( init.handle , undefined )
-		this.color = lib.validate_string( init.color , undefined )
 		this._password = lib.validate_string( init.password, init._password , undefined )
+		this.slug = lib.validate_string( init.slug , `u_${ lib.random_hex(6) }` )
+		this.handle = lib.validate_string( init.handle, this.slug )
+		this.color = lib.validate_string( init.color, '555599' )
 		this._confirmed = lib.validate_string( init.confirmed, init._confirmed , undefined )
 		this._reset_time = lib.validate_string( init._reset_time, init.reset_time , undefined )
 		this.stripe_id_dev = lib.validate_string( init._stripe_id_dev, init.stripe_id_dev , undefined )

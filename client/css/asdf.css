@@ -1,5 +1,14 @@
-/*adsf*/
+body{
+    overflow: hidden;
+}
 
 #menu{
     
+}
+
+canvas#sky-canvas{
+    border: 2px solid red;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    display: inline-block !important;
 }

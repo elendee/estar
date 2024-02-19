@@ -1,5 +1,6 @@
 import '../ui.js'
 import WS from '../WS.js'
+import GAME from '../GAME.js'
 
 
 

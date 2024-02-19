@@ -28,6 +28,16 @@ const meta = `
 <link rel='icon' href='/resource/media/favicon.ico'/>`
 	// ${ env.PRODUCTION ? fonts : '' }
 
+const import_maps = {
+	three: `
+<script type="importmap">
+{
+    "imports": {
+        "three": "/node_modules/three/build/three.module.js"
+    }
+}
+</script>`,
+}
 
 const global_data = () => {
 	return ``
@@ -156,8 +166,10 @@ const render = ( type, request, data ) => {
 			<head>
 				${ meta }
 				${ css_includes }
+				${ import_maps.three }
 				${ script_includes }
 			</head>
+
 			<body class='${ type }'>
 				${ popups }
 				${ global_data() }

@@ -1,4 +1,12 @@
 import BROKER from './EventBroker.js'
+import log from './log.js'
+
+
+function heartbeat(){
+	// DO NOT convert to arrow function or else your sockets will silently dis-connect ( no "this" )
+	this.isAlive = Date.now()
+	// log('flag', 'h eartbea t')
+}
 
 
 
@@ -14,9 +22,9 @@ const bind_user = async( socket ) => { // , CHAT
 
 	USER = socket?.request?.session?.USER
 
-	// log('flag', 'BIND: proceeding')
+	USER._socket = socket
 
-	socket.request.session.USER = USER = new User( USER )
+	socket.bad_packets = 0
 
 	socket.on('pong', heartbeat )
 
@@ -26,19 +34,15 @@ const bind_user = async( socket ) => { // , CHAT
 
 		try{ 
 
-			packet = lib.sanitize_packet( JSON.parse( data ) )
-
-			// USER = socket.request.session.USER
-
-			// packet logger:
-			// if( packet.type !== 'ping' ){
-			// 	log('flag', 'packet log:', packet )
-			// }
+			packet = JSON.parse( data )
 
 			switch( packet.type ){
 
 				case 'ping':
-					socket.send( JSON.stringify({ type: 'pong' }))
+					BROKER.publish('SOCKET_SEND', {
+						socket,
+						type: 'pong',
+					})
 					break;
 
 				default:
@@ -62,4 +66,49 @@ const bind_user = async( socket ) => { // , CHAT
 		})
 	})
 
+}
+
+
+const send = event => {
+
+	try{
+
+		const {
+			socket,
+			type,
+			data,
+		} = event
+
+		const now = Date.now()
+
+		socket.send( JSON.stringify({
+			type,
+			ts: now,
+			data: data || {},
+		}))
+
+	}catch( err ){
+		log('flag', 'bad socket send: ', event )
+	}
+
+}
+
+const disconnect = event => {
+
+	log('wss', 'manual socket disconnect')
+
+	const {
+		socket,
+	} = event
+
+	socket.terminate()
+
+}
+
+
+BROKER.subscribe('SOCKET_SEND', send )
+BROKER.subscribe('SOCKET_DISCONNECT', disconnect )
+
+export {
+	bind_user,
 }

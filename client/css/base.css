@@ -1,5 +1,17 @@
 body{
     background: rgb(40, 40, 40);
+	margin: 0;
+}
+
+a,
+ul,
+li.
+div,
+p,
+input,
+textarea,
+canvas{
+	box-sizing: border-box;
 }
 
 #header{

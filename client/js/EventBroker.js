@@ -16,7 +16,7 @@ class MessageBroker {
 	publish( event, data ){
 
 		if( !this.subscribers[ event ] ){
-			return hal('dev', 'event no sub: ' + event, 1000 )
+			return console.error('event no sub', event )
 		}
 
 		if( 0 && env.LOCAL && !env.LOG_BROKER_EXCLUDES.includes( event ) ){

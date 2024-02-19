@@ -21,6 +21,7 @@ import auth from './server/auth.js'
 import wss from './server/WSS.js'
 import User from './server/models/User.js'
 import GAME from './server/GAME.js'
+import BROKER from './server/EventBroker.js'
 
 
 
@@ -38,10 +39,6 @@ const hydrate_user = ( req, res, next ) => {
 	next()
 }
 
-function heartbeat(){
-	// DO NOT convert to arrow function or else your sockets will silently disconnect ( no "this" )
-	this.isAlive = Date.now()
-}
 
 let sessionMiddleware
 
@@ -147,39 +144,38 @@ let sessionMiddleware
 
 			socket.request = req
 
-			socket.isAlive = socket.isAlive || true
-
-			socket.bad_packets = 0
-
-			socket.on('pong', heartbeat )
-
 			if( WSS.clients.size > env.MAX_PILOTS ) {
 				return return_fail_socket( socket, 'sorry, game is at capacity')
 			}
 
-			if( !GAME.pulse ) await GAME.init()
-						
+			await GAME.init()
+
 			const res = await GAME.init_user( socket )
 
 			if( !res?.success ){
 				log('flag', 'init user fail', res )
 				BROKER.publish('SOCKET_SEND', {
+					socket,
 					type: 'hal',
-					msg_type: 'error',
-					msg: 'error intializing',
-					time: 10 * 1000,
-					ts: Date.now(),
+					data: {
+						msg_type: 'error',
+						msg: 'error initializing',
+						time: 10 * 1000,						
+					}
+
 				})
 			}
 
 		}catch( err ){
 			log('flag', 'init user err', err )
 			BROKER.publish('SOCKET_SEND', {
+				socket,
 				type: 'hal',
-				msg_type: 'error',
-				msg: 'error intializing',
-				time: 10 * 1000,
-				ts: Date.now(),
+				data: {
+					msg_type: 'error',
+					msg: 'error initializing',
+					time: 10 * 1000,					
+				},
 			})
 		}
 
@@ -285,9 +281,7 @@ let sessionMiddleware
 
 	// routing
 	exp.get('/', (request, response) => {
-		log('flag', 'handling /')
 		response.send( render( 'index', request ) )
-		log('flag', 'sent response /')
 	})
 
 	exp.get('/logout', ( request, response ) => {
