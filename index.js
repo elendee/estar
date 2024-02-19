@@ -257,8 +257,10 @@ let sessionMiddleware
 	if( env.LOCAL ){
 		exp.use('/css', express.static( './client/css' )) // __dirname + 
 		exp.use('/js', express.static( './client/js' )) // __dirname + 
+		exp.use('/inc', express.static( './client/inc' )) // __dirname + 
 		exp.use('/fs', express.static( './fs' )) // __dirname + 
 		exp.use('/resource', express.static( './resource' )) // __dirname + 
+		exp.use('/_storage', express.static( './_storage' )) // __dirname + 
 		exp.use('/node_modules/three', express.static( './node_modules/three' )) // __dirname + 
 	}
 

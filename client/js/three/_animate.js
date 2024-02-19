@@ -1,8 +1,10 @@
 import {
 	composeAnimate,
 } from './ComposerSelectiveBloom.js'
+import BROKER from '../EventBroker.js'
 // import GLOBAL from '../GLOBAL.js'
 import STATE from '../STATE.js'
+import GAME from '../GAME.js'
 
 
 
@@ -20,9 +22,10 @@ const animate = () => {
 
 	then = now 
 
-	for( const uuid in ASTEROIDS ){
-		ASTEROIDS[ uuid ].update( delta_seconds )
-	}
+	// for( const uuid in ASTEROIDS ){
+	// 	ASTEROIDS[ uuid ].update( delta_seconds )
+	// }
+	GAME.update( delta_seconds )
 
 	if( !STATE.animating ){
 		return console.log('animation off')
@@ -36,6 +39,11 @@ const animate = () => {
 }
 
 
+const animate_start = event => {
+	STATE.animating = true
+	animate()
+}
+
 
 // const environment_update = delta_seconds => {
 
@@ -48,6 +56,7 @@ const animate = () => {
 // }
 
 
+BROKER.subscribe('ANIMATE_START', animate_start )
 
 
 export default animate

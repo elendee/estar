@@ -18,12 +18,20 @@ class Zone extends Model {
 
 		// instantiated
 		this._PLAYERS = {}
+		this._intervals = {
+			waves: false,
+			sweep: false,
+		}
 
 	}
 
-	async init(){
-		if( !this._pulse ){
-			this._pulse = setInterval(() => {
+	async _bring_online( game ){
+
+		if( !game ) log('flag', `must provide Game to zone.bring online`)
+
+		// sweep
+		if( !this._intervals.sweep ){
+			this._intervals.sweep = setInterval(() => {
 				log('zone', 'pulse')
 				if( !Object.keys( this._PLAYERS ).length ){
 					BROKER.publish('ZONE_CLOSE', {
@@ -32,14 +40,59 @@ class Zone extends Model {
 				}
 			}, PULSE_TIME )
 		}
+
+		// waves
+		if( !this._intervals.waves ){
+			this._intervals.waves = setInterval(() => {
+				this.ocean_level = Math.random()
+				// lib.random_hex( 12 )
+				this.broadcast({
+					type: 'ocean',
+					data: {
+						level: this.ocean_level,
+					}
+				})
+			}, ( env.WAVE_FREQUENCY || 10 ) * 1000 )
+		}
+
+		game._ZONES[ this.uuid ] = this
+
+	}
+
+
+	join_user( user ){
+		user._last_zone = this.uuid
+		this._PLAYERS[ user.slug ] = user
+	}
+
+
+	broadcast( packet, ignore_slug ){
+		for( const slug in this._PLAYERS ){
+			if( ignore_slug === slug ) continue
+			const socket = this._PLAYERS[slug]._socket
+			if( !socket ){
+				log('flag','player missing socket', slug )
+				continue
+			}
+			BROKER.publish('SOCKET_SEND', {
+				socket,
+				...packet,
+			})
+		}
 	}
 
 
 	close(){
-		for( const uuid in this._PLAYERS ){
+		// sweep players
+		for( const slug in this._PLAYERS ){
 			BROKER.publish('SOCKET_DISCONNECT', {
-				socket: this._PLAYERS[uuid]._socket,
+				socket: this._PLAYERS[slug]._socket,
 			})
+		}
+		// intervals
+		for( const type in this._intervals ){
+			clearInterval( this._intervals[ type ] )
+			delete this._intervals[ type ]
 		}
 	}
 

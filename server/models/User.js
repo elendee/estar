@@ -1,3 +1,4 @@
+import env from '../.env.js'
 import lib from '../lib.js'
 import Model from './Model.js'
 
@@ -16,6 +17,13 @@ class User extends Model {
 		this.stripe_id_dev = lib.validate_string( init._stripe_id_dev, init.stripe_id_dev , undefined )
 		this.stripe_id_live = lib.validate_string( init._stripe_id_live, init.stripe_id_live , undefined )
 		this._notes_private = lib.validate_string( init._notes_private, init.notes_private , undefined )
+		this._last_zone = lib.validate_string( init._last_zone, init.last_zone, undefined )
+
+		this.model_url = lib.validate_string( init.model_url, env.DEFAULT_MODEL )
+
+		// instantiated
+		this._socket = init._socket
+
 	}
 
 	async save(){
@@ -33,6 +41,7 @@ class User extends Model {
 			'stripe_id_dev',
 			'stripe_id_live',
 			'notes_private',
+			'last_zone',
 		]
 
 		const update_vals = [ 
@@ -46,6 +55,7 @@ class User extends Model {
 			this._stripe_id_dev,
 			this._stripe_id_live,
 			this._notes_private,
+			this._last_zone,
 		]
 
 		const res = await DB.update( this, update_fields, update_vals )

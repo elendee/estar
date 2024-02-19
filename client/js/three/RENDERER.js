@@ -1,4 +1,4 @@
-// import GLOBAL from '../GLOBAL.js'
+import GLOBAL from '../GLOBAL.js'
 import env from '../env.js'
 import {
 	WebGLRenderer,
@@ -6,21 +6,22 @@ import {
 	// PCFSoftShadowMap,
 } from 'three'
 import CAMERA from './CAMERA.js'
-// import GLOBAL from '../../GLOBAL.js'
 
 
 const ls_nuke = localStorage.getItem('scalene-nuke-res') ? true : false
 
+const saved_res = localStorage.getItem('estar-settings-res-key')
+
+GLOBAL.CURRENT_RES = GLOBAL.RESOLUTIONS[ saved_res || GLOBAL.RES_DEFAULT ]
 
 const set_renderer = window.set_renderer = ( r, init ) => {
 	// if( !init ) return false
 	// console.log('set renderer: ', GLOBAL.RENDER.RES_KEY )
-	const config_res = 1
 	// GLOBAL.RENDER.RESOLUTIONS[ GLOBAL.RENDER.RES_KEY ]
 
 	r.setSize( 
-		window.innerWidth / ( ls_nuke ? 8 : config_res ), 
-		window.innerHeight / ( ls_nuke ? 8 : config_res ), 
+		window.innerWidth / ( ls_nuke ? 8 : GLOBAL.CURRENT_RES ), 
+		window.innerHeight / ( ls_nuke ? 8 : GLOBAL.CURRENT_RES ), 
 		false 
 	)
 }

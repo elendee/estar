@@ -56,6 +56,10 @@ const init = () => {
 					initialized = 1
 					break;
 
+				case 'ocean':
+					BROKER.publish('UPDATE_OCEAN', packet )
+					break;
+
 				case 'hal':
 					hal( packet.data.msg_type, packet.data.msg, packet.data.time || 5 * 1000 )
 					// console.log('wtf hal...', packet )

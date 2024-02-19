@@ -1,5 +1,7 @@
+import log from '../server/log.js'
 import env from '../server/.env.js'
 import PRIVATE from '../server/data/PRIVATE.js'
+import PUBLIC from '../server/data/PUBLIC.js'
 
 
 const style = type => {
@@ -7,7 +9,11 @@ const style = type => {
 }
 
 const script = type => {
-	return `<script type='module' defer='defer' src='/js/${ type }.js'>`
+	return `<script type='module' src='/js/auth/init_${ type }.js' defer></script>`
+}
+
+const scripts = {
+	perlin: `<script src='/inc/perlin.js'></script>`
 }
 
 
@@ -26,21 +32,22 @@ const meta = `
 <meta property="og:description" content="${ env.SITE_META_DESC }"> 
 <meta property="og:image" content="${ env.SITE_IMAGE }"/>
 <link rel='icon' href='/resource/media/favicon.ico'/>`
-	// ${ env.PRODUCTION ? fonts : '' }
+// ${ env.PRODUCTION ? fonts : '' }
 
 const import_maps = {
 	three: `
 <script type="importmap">
 {
     "imports": {
-        "three": "/node_modules/three/build/three.module.js"
+        "three": "/node_modules/three/build/three.module.js",
+		"three/addons/": "/node_modules/three/examples/jsm/"
     }
 }
 </script>`,
 }
 
 const global_data = () => {
-	return ``
+	return `<div id='global-data'>${ JSON.stringify( PUBLIC ) }</div>`
 }
 
 // one time menu init
@@ -114,7 +121,7 @@ const render = ( type, request, data ) => {
 		</html>`
 
 	case 'redirect':
-		script_includes += `<script src='/js/auth/init_redirect.js' type='module' defer></script>`
+		script_includes += script( type )
 		return `
 		<html>
 			<head>
@@ -130,6 +137,26 @@ const render = ( type, request, data ) => {
 					This page uses javascript to redirect you to: <a href='${ data.redirect }'>${ data.name }</a>.  It seems you have javascript disabled, so you can click the link instead.
 				</div>
 				<div id='redirect' data-to='${ data.redirect }'></div>
+				${ build_footer( request ) }
+			</body>
+		</html>`
+
+	case 'asdf':
+		css_includes += css( type )
+		script_includes += script( type ) + scripts.perlin
+		log('flag', 'WOWOWOWWOWOOWW', script_includes )
+		return `
+		<html>
+			<head>
+				${ meta }
+				${ css_includes }
+				${ import_maps.three }
+				${ script_includes }
+			</head>
+			<body class='${ type }'>
+				${ popups }
+				${ global_data() }
+				${ build_header( type, request, env.SITE_TITLE ) }
 				${ build_footer( request ) }
 			</body>
 		</html>`
@@ -158,7 +185,7 @@ const render = ( type, request, data ) => {
 			</html>`
 		}
 
-		script_includes += `<script src='/js/auth/init_${ type }.js' type='module' defer></script>`
+		script_includes += script( type )
 		css_includes += css( type )
 
 		return `
@@ -166,7 +193,6 @@ const render = ( type, request, data ) => {
 			<head>
 				${ meta }
 				${ css_includes }
-				${ import_maps.three }
 				${ script_includes }
 			</head>
 

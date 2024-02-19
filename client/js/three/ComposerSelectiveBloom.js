@@ -8,22 +8,18 @@ import {
 	// MeshLambertMaterial,
 	// Mesh,
 	MeshBasicMaterial,
-} from '/three-patch/build/three.module.js'
-
+} from 'three'
 import GLOBAL from '../GLOBAL.js'
-
 import SCENE from './SCENE.js'
 import CAMERA from './CAMERA.js'
 import RENDERER from './RENDERER.js'
-
-import BROKER from '../utilities/EventBroker.js'
-
+import BROKER from '../EventBroker.js'
 import {
 	EffectComposer,
-} from '/three-patch/examples/jsm/postprocessing/EffectComposer.js'
-import { ShaderPass } from '/three-patch/examples/jsm/postprocessing/ShaderPass.js'
-import { RenderPass } from '/three-patch/examples/jsm/postprocessing/RenderPass.js'
-import { UnrealBloomPass } from '/three-patch/examples/jsm/postprocessing/UnrealBloomPass.js'
+} from 'three/addons/postprocessing/EffectComposer.js'
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 
 
 
@@ -51,8 +47,8 @@ void main() {
 
 const bloom_params = {
 	// exposure: 1,
-	strength: 1.5,
-	threshold: .2,
+	strength: 1,
+	threshold: .5,
 	radius: 0,
 }
 
@@ -72,10 +68,12 @@ RENDERER.toneMapping = ReinhardToneMapping;
 
 
 
+GLOBAL.CURRENT_RES = GLOBAL.CURRENT_RES || GLOBAL.RESOLUTIONS[ saved_res || GLOBAL.RES_DEFAULT ] 
+
 
 const bloomPass = new UnrealBloomPass( new Vector2( 
-	window.innerWidth / GLOBAL.RENDER.RESOLUTIONS[ GLOBAL.RENDER.RES_KEY ], 
-	window.innerHeight / GLOBAL.RENDER.RESOLUTIONS[ GLOBAL.RENDER.RES_KEY ] 
+	window.innerWidth / GLOBAL.CURRENT_RES, 
+	window.innerHeight / GLOBAL.CURRENT_RES 
 ), 0, 0, 0 ); // 1.5, 0.4, 0.85
 bloomPass.threshold = bloom_params.threshold
 bloomPass.strength = bloom_params.strength;
@@ -193,13 +191,13 @@ const removeBloom = window.removeBloom = obj => {
 const composer_res = () => {
 
 	finalComposer.setSize( 
-		window.innerWidth / GLOBAL.RENDER.RESOLUTIONS[ GLOBAL.RENDER.RES_KEY ],
-		window.innerWidth / GLOBAL.RENDER.RESOLUTIONS[ GLOBAL.RENDER.RES_KEY ],
+		window.innerWidth / GLOBAL.CURRENT_RES,
+		window.innerWidth / GLOBAL.CURRENT_RES,
 		false,
 	)
 	bloomComposer.setSize( 
-		window.innerWidth / GLOBAL.RENDER.RESOLUTIONS[ GLOBAL.RENDER.RES_KEY ],
-		window.innerWidth / GLOBAL.RENDER.RESOLUTIONS[ GLOBAL.RENDER.RES_KEY ],
+		window.innerWidth / GLOBAL.CURRENT_RES,
+		window.innerWidth / GLOBAL.CURRENT_RES,
 		false,
 	)
 

@@ -19,10 +19,13 @@ class Game {
 
 		// instantiated
 		this._ZONES = {}
+		this._START_ZONE = false
 	}
 
 
 	async init(){
+
+		if( !env.STARTING_ZONE ) return log("flag", 'env starting zone required')
 
 		if( !this._pulse ){
 
@@ -47,9 +50,8 @@ class Game {
 			sql = `SELECT * FROM zones WHERE id=?`
 			res = await pool.queryPromise( sql, env.STARTING_ZONE )
 			for( const r of res.results || [] ){
-				const zone = new Zone( r )
-				this._ZONES[ zone.uuid ] = zone
-				zone.init()
+				const zone = this._START_ZONE = new Zone( r )
+				zone._bring_online( this )
 				.catch( err => {
 					log('flag',' err init zone', err )
 				})
@@ -59,26 +61,50 @@ class Game {
 	}
 
 
+	async touch_zone( uuid ){
+		if( typeof uuid !== 'string' ) return log('flag', 'zone must have uuid')
+		if( this._ZONES[ uuid ] ) return this._ZONES[ uuid ]
+		const pool = DB.getPool()
+		let sql, res
+		sql = `SELECT * FROM zones WHERE uuid=?`
+		res = await pool.queryPromise( sql, uuid )
+		if( !res.results?.length ) return log('flag', `failed to find zone: ${ uuid }`)
+		const zone = new Zone( res.results[0] )
+		return zone
+	}
+
+
 	async init_user( socket ){
 		let user = socket?.request?.session?.USER
 		if( !user ) throw new Error('invalid user to init')
 
-		user = new User( user )
-
 		await ROUTER.bind_user( socket )
+
+		user = new User( user )
+	
+		let zone
+		if( user._last_zone ){
+			zone = await this.touch_zone( user._last_zone )
+			await zone._bring_online( this )
+		}else{
+			zone = this._START_ZONE
+		}
+
+		zone.join_user( user )
 
 		BROKER.publish('SOCKET_SEND', {
 			socket,
 			type: 'init_user',
 			data: {
-				user: user.publish()
+				user: user.publish(),
+				zone: zone.publish(),
 			}
 		})
 
 		return {
 			success: true,
 		}
-		
+
 	}
 
 
