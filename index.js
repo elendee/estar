@@ -43,7 +43,7 @@ function heartbeat(){
 	this.isAlive = Date.now()
 }
 
-
+let sessionMiddleware
 
 
 // init
@@ -80,15 +80,16 @@ function heartbeat(){
 	const exp = new express()
 	const server = http.createServer( exp )
 
-	// express + session, using our new Store
-	exp.use(session({
+	sessionMiddleware = session({
 		key: env.MYSQL_SESSION.KEY,
 		secret: env.MYSQL_SESSION.SECRET,
 		store: sessionStore,
 		resave: false,
 		saveUninitialized: false,
-	}))
+	})
 
+	// express + session, using our new Store
+	exp.use( sessionMiddleware )
 
 
 	// 	secret: env.REDIS.SECRET,
@@ -123,14 +124,12 @@ function heartbeat(){
 	})
 
 	server.on('upgrade', function( request, socket, head ){
-
-		log('flag', 'upgrade')
-
 		// redis_session
-		mysql_session( request, {}, () => {
 		// lru_session( request, {}, () => {
+		sessionMiddleware( request, {}, () => {
+		// mysql_session( request, {}, () => {
 
-			log('wss', 'session parsed')
+			log('wss', 'session parsed: ', typeof request, typeof request.session )
 
 			WSS.handleUpgrade( request, socket, head, function( ws ) {
 				WSS.emit('connection', ws, request )
@@ -140,9 +139,9 @@ function heartbeat(){
 
 	WSS.on('connection', async( socket, req ) => {
 
-		log('wss', 'connection: ', identify( req.session.USER ) )
+		log('wss', 'connection: ', lib.identify( req.session?.USER ) )
 
-		log('debug', 'INHERITED request coin: ', req.session.USER && req.session.USER._PILOT ? req.session.USER._PILOT._coin : false  )
+		log('debug', 'INHERITED request coin: ', req.session?.USER?._PILOT?._coin || false )
 
 		socket.request = req
 
@@ -156,14 +155,12 @@ function heartbeat(){
 			return return_fail_socket( socket, 'sorry, game is at capacity')
 		}
 
-		// init 
-
 		if( !GAME.pulse ) await GAME.init()
 					
 		const res = await GAME.init_user( socket )
 
 		if( !res?.success ){
-			log('flag', 'init fail', res )
+			log('flag', 'init user fail', res )
 			socket.send( JSON.stringify({
 				type: 'hal',
 				msg_type: 'error',
