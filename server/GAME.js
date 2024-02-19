@@ -2,6 +2,7 @@ import env from './.env.js'
 import log from './log.js'
 import lib from './lib.js'
 import DB from './db.js'
+import ROUTER from './ROUTER.js'
 // import User from './models/User.js'
 
 
@@ -32,7 +33,10 @@ class Game {
 
 	async init_user( socket, request ){
 		const user = request?.session?.USER
-		if( !user ) return log('flag', 'invalid user to init')
+		if( !user ) throw new Error('invalid user to init')
+
+		await ROUTER.bind_user( socket )
+
 	}
 
 }

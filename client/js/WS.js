@@ -42,8 +42,7 @@ const init = () => {
 
 			console.log('packet: ', packet )
 			if( !packet.type || !packet.data || !packet.ts ){
-				console.log('dev- bad packet', packet)
-				return
+				return console.log('dev- bad packet', packet)
 			}
 
 			if( 0 && env.LOCAL && !env.LOG_WS_RECEIVE_EXCLUDES.includes( packet.type ) ) console.log( packet )
@@ -60,11 +59,11 @@ const init = () => {
 					console.log('user not yet intialized.. packet: ', packet )
 				}else{
 					// limbo, nothing
-				}
+				}				
 				return false
 			}
 
-			if( key === env.EVENT_WATCH_KEY ) event_watch( packet )
+			if( key === env.EVENT_WATCH_KEY ) event_watch( packet )				
 
 			switch( packet.type ){
 
@@ -75,6 +74,7 @@ const init = () => {
 
 				case 'hal':
 					hal( packet.data.msg_type, packet.data.msg, packet.data.time || 5 * 1000 )
+					console.log('wtf...')
 					break;
 
 				case 'move':

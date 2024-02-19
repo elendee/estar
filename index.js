@@ -139,34 +139,48 @@ let sessionMiddleware
 
 	WSS.on('connection', async( socket, req ) => {
 
-		log('wss', 'connection: ', lib.identify( req.session?.USER ) )
+		try{
 
-		log('debug', 'INHERITED request coin: ', req.session?.USER?._PILOT?._coin || false )
+			log('wss', 'connection: ', lib.identify( req.session?.USER ) )
 
-		socket.request = req
+			log('debug', 'INHERITED request coin: ', req.session?.USER?._PILOT?._coin || false )
 
-		socket.isAlive = socket.isAlive || true
+			socket.request = req
 
-		socket.bad_packets = 0
+			socket.isAlive = socket.isAlive || true
 
-		socket.on('pong', heartbeat )
+			socket.bad_packets = 0
 
-		if( WSS.clients.size > env.MAX_PILOTS ) {
-			return return_fail_socket( socket, 'sorry, game is at capacity')
-		}
+			socket.on('pong', heartbeat )
 
-		if( !GAME.pulse ) await GAME.init()
-					
-		const res = await GAME.init_user( socket )
+			if( WSS.clients.size > env.MAX_PILOTS ) {
+				return return_fail_socket( socket, 'sorry, game is at capacity')
+			}
 
-		if( !res?.success ){
-			log('flag', 'init user fail', res )
-			socket.send( JSON.stringify({
+			if( !GAME.pulse ) await GAME.init()
+						
+			const res = await GAME.init_user( socket )
+
+			if( !res?.success ){
+				log('flag', 'init user fail', res )
+				BROKER.publish('SOCKET_SEND', {
+					type: 'hal',
+					msg_type: 'error',
+					msg: 'error intializing',
+					time: 10 * 1000,
+					ts: Date.now(),
+				})
+			}
+
+		}catch( err ){
+			log('flag', 'init user err', err )
+			BROKER.publish('SOCKET_SEND', {
 				type: 'hal',
 				msg_type: 'error',
 				msg: 'error intializing',
-				time: 10 * 1000
-			}))
+				time: 10 * 1000,
+				ts: Date.now(),
+			})
 		}
 
 	})

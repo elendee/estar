@@ -28,6 +28,8 @@ const gatekeep = (req, res, next) => {
 
 	}else{
 
+		req.session.USER = new User( req.session.USER )
+
 		ip = ( req.headers['x-forwarded-for'] || req.connection.remoteAddress || '' ).split(',')[0].trim()
 
 		bare_path = req.path.replace(/\//g, '')
